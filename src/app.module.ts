@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { configuration } from 'config/app.config';
+import { FriendRequestModule } from './friend-request/friend-request.module';
 
 
 @Module({
@@ -45,6 +46,8 @@ import { configuration } from 'config/app.config';
 
     UserModule,
     AuthModule,
+    FriendRequestModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

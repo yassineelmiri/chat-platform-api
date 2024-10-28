@@ -3,3 +3,7 @@ export enum RoleTypes {
   Admin = 'admin',
 }
 
+export enum StatusUser {
+  OFFLINE = 'OFFLINE',
+  ONLINE = 'ONLINE',
+}

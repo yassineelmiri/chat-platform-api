@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { configuration } from 'config/app.config';
 import { FriendRequestModule } from './friend-request/friend-request.module';
+import { ChannelModule } from './channel/channel.module';
 
 
 @Module({
@@ -46,10 +47,11 @@ import { FriendRequestModule } from './friend-request/friend-request.module';
 
     UserModule,
     AuthModule,
-    FriendRequestModule,
-    
+
+    ChannelModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -19,6 +19,9 @@ export class FriendRequest {
 
   @Prop({ enum: FriendRequestStatus, default: FriendRequestStatus.PENDING })
   status: FriendRequestStatus;
+
+  @Prop({ default: Date.now })
+  timestamp: Date;
 }
 
 export const FriendRequestSchema = SchemaFactory.createForClass(FriendRequest);

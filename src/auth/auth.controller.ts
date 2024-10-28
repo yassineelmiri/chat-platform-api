@@ -10,18 +10,18 @@ import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
 
-  // POST SIGNUP
-  @Post('signup')
+  // POST register
+  @Post('register')
   async signup(@Body() signupData: SignupDto) {
     return this.authService.signup(signupData);
   }
 
 
 
-  
+
   // POST LOGIN
   @Post('login')
   async login(@Body() loginData: LoginDto) {

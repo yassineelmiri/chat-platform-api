@@ -17,7 +17,7 @@ export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>, // here we call  schema <model user>
     private jwtService: JwtService, // this give us ability to create token for users
-  ) {}
+  ) { }
 
   // SignupDto it's like a validator  validate data we pass to it
   async signup(signupData: SignupDto) {

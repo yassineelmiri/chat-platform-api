@@ -1,7 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 import { User } from './user.schema';
 import { Message } from './message.schema';
+
+export type ChannelDocument = HydratedDocument<Channel>;
+
 
 
 @Schema()
@@ -32,6 +35,9 @@ export class Channel extends Document {
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Message' }] })
   messages: Message[];
+
+  @Prop({ default: Date.now })
+  timestamp: Date;
 }
 
 export const ChannelSchema = SchemaFactory.createForClass(Channel);

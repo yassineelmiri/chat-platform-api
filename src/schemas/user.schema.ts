@@ -34,6 +34,9 @@ export class User {
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Message' }] })
   messages: Message[];
+
+  @Prop({ default: Date.now })
+  timestamp: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

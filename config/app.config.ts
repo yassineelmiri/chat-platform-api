@@ -18,10 +18,10 @@ export const configuration = (): Config => ({
   database: {
     url:
       process.env.DATABASE_URL ||
-      'mongodb+srv://siskodb:sisko007SP@cluster0.2pdvdr6.mongodb.net/spotFinder?retryWrites=true&w=majority',
+      '',
   },
   jwt: {
-    secret: process.env.JWT_SECRET || 'myjwtjcrts',
-    expiresIn: process.env.JWT_EXPIRES_IN || '24h',
+    secret: process.env.JWT_SECRET || '',
+    expiresIn: process.env.JWT_EXPIRES_IN || '90d',
   },
 });

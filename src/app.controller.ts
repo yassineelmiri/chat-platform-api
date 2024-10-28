@@ -1,5 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
+
+import { RoleTypes } from './common/enums/user.enum';
+import { AuthGuard } from './common/guards/auth.guard';
+import { RoleGuard } from './common/guards/role.guard';
+import { Roles } from './common/decorators/roles.decorator';
+
 
 @Controller()
 export class AppController {
@@ -9,4 +15,13 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(RoleTypes.User)
+  @Get('protected')
+  protected(): string {
+    return this.appService.getHello();
+  }
 }
+
+

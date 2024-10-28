@@ -21,7 +21,7 @@ export class AuthService {
 
   // SignupDto it's like a validator  validate data we pass to it
   async signup(signupData: SignupDto) {
-    const { email, password, name, role } = signupData;
+    const { email, password, name, role = 'user' } = signupData;
 
     // check if email is existing
     const emailIsExisting = await this.userModel.findOne({ email });

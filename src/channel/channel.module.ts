@@ -18,6 +18,6 @@ import { Message, MessageSchema } from 'src/schemas/message.schema';
   ],
   controllers: [ChannelController],
   providers: [ChannelService, ChannelGateway],
-  exports: [ChannelService],  // Export  service to use it in other moduel
+  exports: [ChannelService, MongooseModule],  // Export  service to use it in other moduel
 })
 export class ChannelModule { }

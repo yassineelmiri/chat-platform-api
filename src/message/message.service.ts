@@ -14,8 +14,12 @@ export class MessageService {
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
     @InjectModel(Channel.name) private channelModel: Model<ChannelDocument>,
     @InjectModel(Conversation.name) private conversationModel: Model<ConversationDocument>,
+
+
   ) { }
 
+
+  // this respons for send msg inside channel
   async sendChannelMessage(
     channelId: string,
     createMessageDto: CreateMessageDto,
@@ -44,6 +48,8 @@ export class MessageService {
     return message;
   }
 
+
+  // this respons for get msgs inside channel
   async getChannelMessages(
     channelId: string,
     paginationDto: MessagePaginationDto,
@@ -64,8 +70,6 @@ export class MessageService {
 
 
   // now this for conversations 
-
-
   async sendConversationMessage(
     conversationId: string,
     createMessageDto: CreateMessageDto,
@@ -118,7 +122,7 @@ export class MessageService {
 
 
 
-
+  // this response for delete msg in both channel and conversation
   async deleteMessage(messageId: string, userId: string): Promise<void> {
     const message = await this.messageModel.findById(messageId);
     if (!message) {

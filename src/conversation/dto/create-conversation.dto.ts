@@ -1,10 +1,13 @@
 import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateConversationDto {
-    @IsArray()
-    @IsNotEmpty()
-    participantIds: string[]; // Array of User IDs user  and user 
+    // @IsArray()
+    // @IsNotEmpty()
+    // participantIds: string[]; // Array of User IDs user  and user 
 
+
+    @IsNotEmpty()
+    withUser: string;  // id of user wnat start conversation with
     @IsString()
-    content: string; //  here contain initial message content 
+    message: string; //  here contain initial message content 
 }

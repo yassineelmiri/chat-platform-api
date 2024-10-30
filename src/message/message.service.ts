@@ -31,7 +31,7 @@ export class MessageService {
       throw new NotFoundException('Channel not found');
     }
 
-    if (!channel.members.includes(createMessageDto.senderId as any)) {
+    if (!channel.members.includes(createMessageDto.sender as any)) {
       throw new BadRequestException('User is not a member of this channel');
     }
 
@@ -81,7 +81,7 @@ export class MessageService {
     }
 
     // check if the sender exist in this conversation
-    if (!conversation.participants.includes(createMessageDto.senderId as any)) {
+    if (!conversation.participants.includes(createMessageDto.sender as any)) {
       throw new BadRequestException('User is not a participant in this conversation');
     }
 

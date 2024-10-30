@@ -15,38 +15,38 @@ export class ConversationService {
     private messageService: MessageService,
   ) { }
 
-  async createConversation(createConversationDto: CreateConversationDto): Promise<Conversation> {
-    const { participantIds, content } = createConversationDto;
+  async createConversation(createConversationDto: CreateConversationDto, userId: string): Promise<Conversation> {
+    const { withUser, message } = createConversationDto;
 
 
     // Check if users exist
-    const participants = await this.userModel.find({ _id: { $in: participantIds } });
-    if (participants.length !== participantIds.length) {
-      throw new NotFoundException('One or more users not found');
+    const userWantToTalkExist = await this.userModel.find({ _id: withUser });
+    if (!userWantToTalkExist) {
+      throw new NotFoundException(' user want start conversation with not found');
     }
 
     // create the new conversation
     const newConversation = new this.conversationModel({
-      participants: participantIds,
+      participants: [userId, withUser],
       messages: [], //  here i initialize with empty messages array
     });
 
     await newConversation.save();
 
     // send the initial message if content is provided
-    if (content) {
+    if (message) {
       const messageDto: CreateMessageDto = {
-        senderId: participants[0]._id as any, //  the First participant index sends initial message
-        content: content,
+        sender: userId, //  the First participant index sends initial message
+        content: message,
       };
 
-      const message = await this.messageService.sendConversationMessage(
+      const messageCreated = await this.messageService.sendConversationMessage(
         newConversation._id.toString(),
         messageDto
       );
 
 
-      //TODO: push to channe;
+
     }
 
     return newConversation;
@@ -72,7 +72,6 @@ export class ConversationService {
     return this.conversationModel
       .find({ participants: userId })
       .populate('participants', 'username email')
-      .populate('messages')
       .exec();
   }
 }

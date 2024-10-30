@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 import { RoleTypes, StatusUser } from 'src/common/enums/user.enum';
-import { Channel } from '../../channel/schemas/channel.schema';
-import { Message } from '../../message/schemas/message.schema';
+
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -26,8 +25,8 @@ export class User {
   @Prop({ default: 0 })
   reputation: number;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  friends: User[];
+  // @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  // friends: User[];
 
 
 

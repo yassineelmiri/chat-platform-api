@@ -11,9 +11,9 @@ import { MessagePaginationDto } from './dto/message-pagination.dto';
 @Injectable()
 export class MessageService {
   constructor(
-    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
-    @InjectModel(Channel.name) private channelModel: Model<ChannelDocument>,
-    @InjectModel(Conversation.name) private conversationModel: Model<ConversationDocument>,
+    @InjectModel(Message.name) private messageModel: Model<Message>,
+    @InjectModel(Channel.name) private channelModel: Model<Channel>,
+    @InjectModel(Conversation.name) private conversationModel: Model<Conversation>,
 
 
   ) { }

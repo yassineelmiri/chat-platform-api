@@ -16,5 +16,5 @@ export class CreateChannelDto {
   isSafeMode?: boolean;
 
   @IsMongoId()
-  ownerId: string;
+  ownerId?: string;
 }

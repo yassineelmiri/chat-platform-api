@@ -17,6 +17,6 @@ import { ChannelModule } from 'src/channel/channel.module';
     ChannelModule
   ],
   providers: [ConversationService, MessageService],
-  exports: [ConversationService, MessageService],
+  exports: [ConversationService],
 })
 export class ConversationModule { }

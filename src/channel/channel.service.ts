@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model, Mongoose, Types } from 'mongoose';
+import  { Model,  Types } from 'mongoose';
 import { Channel, ChannelDocument } from 'src/schemas/channel.schema';
-import { Message, MessageDocument } from 'src/schemas/message.schema';
 import { User, UserDocument } from 'src/schemas/user.schema';
 import { CreateChannelDto } from './dto/create-channel.dto';
 
@@ -11,9 +10,7 @@ import { CreateChannelDto } from './dto/create-channel.dto';
 export class ChannelService {
   constructor(
     @InjectModel(Channel.name) private channelModel: Model<ChannelDocument>,
-
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
   ) { }
 
 
@@ -66,29 +63,4 @@ export class ChannelService {
     return channel;
   }
 
-  // Method for sending a message
-  async sendMessage(userId: string, channelId: string, content: string): Promise<Message> {
-    const user = await this.userModel.findById(userId);
-    const channel = await this.channelModel.findById(channelId);
-
-    if (!user) throw new NotFoundException('User not found');
-    if (!channel) throw new NotFoundException('Channel not found');
-
-    const message = new this.messageModel({
-      sender: user._id,
-      channel: channel._id,
-      content,
-    });
-
-    await message.save();
-
-    // Add message reference to both channel and user
-    channel.messages.push(message._id as any);
-    await channel.save();
-
-    user.messages.push(message._id as any);
-    await user.save();
-
-    return message;
-  }
 }

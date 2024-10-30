@@ -13,40 +13,37 @@ import { FriendRequestService } from './friend-request.service';
 import { CreateFriendRequestDto } from './dto/create-friend-request.dto';
 import { UpdateFriendRequestDto } from './dto/update-friend-request.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { RoleGuard } from 'src/common/guards/role.guard';
 import { RoleTypes } from 'src/common/enums/user.enum';
+import { RequestWithUser } from 'src/common/types/user.types';
 
 
 
 
 
-// this Custom type extending Express Request with user property
-interface RequestWithUser extends Request {
-  user: { userId: string };
-}
 
 
 @Controller('friend-requests')
 @UseGuards(AuthGuard, RoleGuard)
 @Roles(RoleTypes.User)
 export class FriendRequestController {
-  constructor(private readonly friendRequestService: FriendRequestService) {}
+  constructor(private readonly friendRequestService: FriendRequestService) { }
 
   @Post()
   create(
     @Body() createFriendRequestDto: CreateFriendRequestDto,
-    @Req() req: any,
+    @Req() req: RequestWithUser,
   ) {
     return this.friendRequestService.create(
       createFriendRequestDto,
-      req.user.userId,
+      req.userId,
     );
   }
 
   @Get('pending')
   getPendingRequests(@Req() req: RequestWithUser) {
-    return this.friendRequestService.getPendingRequests(req.user.userId);
+    return this.friendRequestService.getPendingRequests(req.userId);
   }
 
   @Patch(':id')

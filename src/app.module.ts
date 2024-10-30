@@ -7,7 +7,6 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { configuration } from 'config/app.config';
-import { FriendRequestModule } from './friend-request/friend-request.module';
 import { ChannelModule } from './channel/channel.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
@@ -49,12 +48,9 @@ import { MessageModule } from './message/message.module';
 
     UserModule,
     AuthModule,
-
-    ChannelModule,
-
-    ConversationModule,
-
     MessageModule,
+    ChannelModule,
+    ConversationModule,
 
   ],
   controllers: [AppController],

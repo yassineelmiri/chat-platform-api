@@ -27,14 +27,9 @@ export class Message {
   @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [] })
   readBy: User[];
 
-  @Prop({ default: false })
-  isEdited: boolean;
-
   @Prop()
   editedAt?: Date;
 
-  @Prop({ default: false })
-  isDeleted: boolean;
 
   @Prop()
   deletedAt?: Date;

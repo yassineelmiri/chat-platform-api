@@ -26,6 +26,7 @@ export class ChannelGateway implements OnGatewayConnection, OnGatewayDisconnect 
     // Direct message from user 1 to user 2
     @SubscribeMessage('sendDirectMessage')
     handleDirectMessage(client: Socket, { recipientId, message }: { recipientId: string, message: any }): void {
+        
         this.server.to(`user_${recipientId}`).emit('receiveDirectMessage', { senderId: client.id, message });
         console.log(`User ${client.id} sent direct message to ${recipientId}`);
     }

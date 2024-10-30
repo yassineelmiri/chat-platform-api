@@ -1,11 +1,13 @@
-import { IsBoolean, IsMongoId, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, isEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
+import { StatusChannel } from 'src/common/enums/channel.enum';
 
 export class CreateChannelDto {
   @IsString()
   name: string;
 
   @IsString()
-  type: string;
+  @IsOptional()
+  type?: string;
 
   @IsBoolean()
   @IsOptional()
@@ -16,5 +18,6 @@ export class CreateChannelDto {
   isSafeMode?: boolean;
 
   @IsMongoId()
+  @IsOptional()
   ownerId?: string;
 }

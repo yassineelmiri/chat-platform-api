@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument, Schema as MongooseSchema } from 'mongoose';
-import { User } from './user.schema';
-import { Message } from './message.schema';
+import { User } from '../../user/schemas/user.schema';
+import { Message } from '../../message/schemas/message.schema';
+import { StatusChannel } from 'src/common/enums/channel.enum';
 
 export type ChannelDocument = HydratedDocument<Channel>;
 
@@ -12,7 +13,7 @@ export class Channel extends Document {
   @Prop()
   name: string;
 
-  @Prop()
+  @Prop({ enum: StatusChannel, default: StatusChannel.PUBLIC })
   type: string;
 
   @Prop({ default: false })
@@ -24,7 +25,7 @@ export class Channel extends Document {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   owner: User;
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }] })
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }], index: true })
   members: User[];
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }] })
@@ -33,8 +34,6 @@ export class Channel extends Document {
   @Prop({ type: [String], default: [] })
   bannedWords: string[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Message' }] })
-  messages: Message[];
 
   @Prop({ default: Date.now })
   timestamp: Date;

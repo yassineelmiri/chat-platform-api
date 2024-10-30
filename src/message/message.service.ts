@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Message, MessageDocument } from '../schemas/message.schema';
-import { Channel, ChannelDocument } from 'src/schemas/channel.schema';
-import { Conversation, ConversationDocument } from 'src/schemas/conversation.schema';
+import { Message, MessageDocument } from './schemas/message.schema';
+import { Channel, ChannelDocument } from 'src/channel/schemas/channel.schema';
+import { Conversation, ConversationDocument } from 'src/conversation/schemas/conversation.schema';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagePaginationDto } from './dto/message-pagination.dto';
 
@@ -24,6 +24,8 @@ export class MessageService {
     channelId: string,
     createMessageDto: CreateMessageDto,
   ): Promise<Message> {
+
+    // chekc if channel exist
     const channel = await this.channelModel.findById(channelId);
     if (!channel) {
       throw new NotFoundException('Channel not found');
@@ -40,10 +42,7 @@ export class MessageService {
 
     await message.save();
 
-    await this.channelModel.findByIdAndUpdate(
-      channelId,
-      { $push: { messages: message._id } },
-    );
+
 
     return message;
   }
@@ -74,11 +73,14 @@ export class MessageService {
     conversationId: string,
     createMessageDto: CreateMessageDto,
   ): Promise<Message> {
+
+    // check if conversatin Exist
     const conversation = await this.conversationModel.findById(conversationId);
     if (!conversation) {
       throw new NotFoundException('Conversation not found');
     }
 
+    // check if the sender exist in this conversation
     if (!conversation.participants.includes(createMessageDto.senderId as any)) {
       throw new BadRequestException('User is not a participant in this conversation');
     }
@@ -90,10 +92,6 @@ export class MessageService {
 
     await message.save();
 
-    await this.conversationModel.findByIdAndUpdate(
-      conversationId,
-      { $push: { messages: message._id } },
-    );
 
     return message;
   }
@@ -135,12 +133,7 @@ export class MessageService {
 
     await this.messageModel.findByIdAndDelete(messageId);
 
-    // Remove message reference from conversation
-    if (message.conversation) {
-      await this.conversationModel.findByIdAndUpdate(
-        message.conversation,
-        { $pull: { messages: messageId } }
-      );
-    }
   }
+
+
 }

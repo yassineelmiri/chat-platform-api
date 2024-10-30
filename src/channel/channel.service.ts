@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import  { Model,  Types } from 'mongoose';
-import { Channel, ChannelDocument } from 'src/schemas/channel.schema';
-import { User, UserDocument } from 'src/schemas/user.schema';
+import { Model, Types } from 'mongoose';
+import { Channel, ChannelDocument } from 'src/channel/schemas/channel.schema';
+import { User, UserDocument } from 'src/user/schemas/user.schema';
 import { CreateChannelDto } from './dto/create-channel.dto';
 
 
@@ -15,10 +15,14 @@ export class ChannelService {
 
 
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
+
+
+
     const { name, type, isPrivate, isSafeMode, ownerId } = createChannelDto;
 
-    const owner = await this.userModel.findById(ownerId);
-    if (!owner) throw new NotFoundException('Owner not found');
+    // no need fetch already fetched userwner from auth guard
+    // const owner = await this.userModel.findById(ownerId);
+    // if (!owner) throw new NotFoundException('Owner not found');
 
     // Create the new channel
     const newChannel = new this.channelModel({
@@ -30,18 +34,20 @@ export class ChannelService {
       members: [ownerId]  // Automatically add owner to members 
     });
 
-    // Save the channel and update owner  channels list by add it to his list
+    // Save the channel 
     await newChannel.save();
-    owner.channels.push(newChannel._id as any);
-    await owner.save();
+
 
     return newChannel;
+
+
   }
 
 
 
   // This Method for joining a channel
   async joinChannel(userId: string, channelId: string): Promise<Channel> {
+
 
     // fetch channel by id & chck if xist
     const channel = await this.channelModel.findById(channelId);
@@ -56,11 +62,30 @@ export class ChannelService {
       channel.members.push(userId as any);
       await channel.save();
 
-      user.channels.push(channelId as any);
-      await user.save();
     }
 
     return channel;
+
+  }
+
+
+
+  async deleteChannel(channelId: string, userId: string): Promise<void> {
+
+
+    const channel = await this.channelModel.findById(channelId);
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+
+    if (channel.owner.toString() !== userId) {
+      throw new BadRequestException('User can only delete their own channel');
+    }
+
+    await this.channelModel.findByIdAndDelete(channelId);
+
+
+    throw new BadRequestException('Failed to Delete channel');
   }
 
 }

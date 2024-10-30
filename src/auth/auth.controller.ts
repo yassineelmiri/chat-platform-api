@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Body,
+  BadRequestException,
 
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -14,9 +15,14 @@ export class AuthController {
 
 
   // POST register
-  @Post('register')
+  @Post('signup')
   async signup(@Body() signupData: SignupDto) {
-    return this.authService.signup(signupData);
+    try {
+      return this.authService.signup(signupData);
+    } catch (error) {
+
+      throw new BadRequestException('Failed to Signup');
+    }
   }
 
 
@@ -25,7 +31,13 @@ export class AuthController {
   // POST LOGIN
   @Post('login')
   async login(@Body() loginData: LoginDto) {
-    return this.authService.login(loginData);
+
+    try {
+      return this.authService.login(loginData);
+    } catch (error) {
+
+      throw new BadRequestException('Failed to Login');
+    }
   }
 
 

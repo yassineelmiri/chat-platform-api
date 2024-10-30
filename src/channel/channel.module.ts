@@ -3,9 +3,9 @@ import { ChannelService } from './channel.service';
 import { ChannelController } from './channel.controller';
 import { ChannelGateway } from './channel.gateway';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'src/schemas/user.schema';
-import { Channel, ChannelSchema } from 'src/schemas/channel.schema';
-import { Message, MessageSchema } from 'src/schemas/message.schema';
+import { User, UserSchema } from 'src/user/schemas/user.schema';
+import { Channel, ChannelSchema } from 'src/channel/schemas/channel.schema';
+import { Message, MessageSchema } from 'src/message/schemas/message.schema';
 
 @Module({
   imports: [

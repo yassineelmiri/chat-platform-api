@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../schemas/user.schema';
+import { User, UserDocument } from '../user/schemas/user.schema';
 import { StatusUser } from 'src/common/enums/user.enum';
 
 @Injectable()
@@ -35,6 +35,8 @@ export class AuthGuard implements CanActivate {
         .select('-password') // Here i Exclude password from the returned user object
         .exec();
 
+
+
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
@@ -46,7 +48,7 @@ export class AuthGuard implements CanActivate {
 
       // Add user info to request so u can access it from controller and services
       request.user = user;
-      request.userId = user._id;
+      request.userId = user._id?.toString();
       request.role = payload.role;
 
       return true;

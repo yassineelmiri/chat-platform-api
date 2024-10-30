@@ -10,6 +10,7 @@ import { configuration } from 'config/app.config';
 import { ChannelModule } from './channel/channel.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
+import { FriendshipModule } from './friendship/friendship.module';
 
 
 @Module({
@@ -51,6 +52,7 @@ import { MessageModule } from './message/message.module';
     MessageModule,
     ChannelModule,
     ConversationModule,
+    FriendshipModule,
 
   ],
   controllers: [AppController],

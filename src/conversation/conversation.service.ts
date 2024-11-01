@@ -4,15 +4,15 @@ import { Model } from 'mongoose';
 import { Conversation, ConversationDocument } from './schemas/conversation.schema';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { CreateConversationDto } from './dto/create-conversation.dto';
-import { MessageService } from 'src/message/message.service';
-import { CreateMessageDto } from 'src/message/dto/create-message.dto';
+// import { MessageService } from 'src/message/message.service';
+// import { CreateMessageDto } from 'src/message/dto/create-message.dto';
 
 @Injectable()
 export class ConversationService {
   constructor(
     @InjectModel(Conversation.name) private conversationModel: Model<ConversationDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private messageService: MessageService,
+    // private messageService: MessageService,
   ) { }
 
   async createConversation(createConversationDto: CreateConversationDto, userId: string): Promise<Conversation> {
@@ -35,15 +35,15 @@ export class ConversationService {
 
     // send the initial message if content is provided
     if (message) {
-      const messageDto: CreateMessageDto = {
-        sender: userId, //  the First participant index sends initial message
-        content: message,
-      };
+      // const messageDto: CreateMessageDto = {
+      //   sender: userId, //  the First participant index sends initial message
+      //   content: message,
+      // };
 
-      const messageCreated = await this.messageService.sendConversationMessage(
-        newConversation._id.toString(),
-        messageDto
-      );
+      // const messageCreated = await this.messageService.sendConversationMessage(
+      //   newConversation._id.toString(),
+      //   messageDto
+      // );
 
 
 

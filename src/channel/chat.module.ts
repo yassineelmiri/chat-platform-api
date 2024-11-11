@@ -6,6 +6,7 @@ import { User, UserSchema } from 'src/user/schemas/user.schema';
 import { Message, MessageSchema } from 'src/message/schemas/message.schema';
 import { Chat, ChatSchema } from './schemas/chat.schema';
 import { ChatService } from './chat.service';
+import { MessageService } from 'src/message/message.service';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { ChatService } from './chat.service';
     ]),
   ],
   controllers: [ChatController],
-  providers: [ChatService],
+  providers: [ChatService, MessageService],
   exports: [ChatService, MongooseModule],  // Export  service to use it in other moduel
 })
 export class ChatModule { }

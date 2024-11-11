@@ -16,7 +16,7 @@ export class ChatController {
 
 
 
-  @Post('create')
+  @Post()
   async createChat(@Body() createChatDto: CreateChatDto, @Req() req: RequestWithUser): Promise<Chat> {
     try {
       return this.chatService.createChat(createChatDto, req.userId);

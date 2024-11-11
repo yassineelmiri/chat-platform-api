@@ -30,11 +30,12 @@ export class ChatService {
     // Validate members if provided
     if (members) {
       const membersExist = await this.userModel.find({ _id: { $all: members } });
+
+
       if (!membersExist || membersExist.length !== members.length) {
         throw new NotFoundException('One or more members not found');
       }
     }
-
     // Create new Chat group/conversation
     const newChat = new this.chatModel({
       name,
@@ -47,6 +48,9 @@ export class ChatService {
     });
 
 
+
+    await newChat.save();
+    
     // create first msg if user wnat start normal conversation
     if (!isGroup && message) {
       // Create initial message if its a direct conversation

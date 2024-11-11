@@ -2,7 +2,8 @@ import { IsArray, IsBoolean, IsMongoId, IsOptional, IsString } from 'class-valid
 
 export class CreateChatDto {
   @IsString()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @IsString()
   @IsOptional()
@@ -27,7 +28,7 @@ export class CreateChatDto {
   @IsString()
   message: string;
 
-  @IsMongoId()
+  // @IsMongoId()
   @IsOptional()
   @IsArray()
   members?: string[];

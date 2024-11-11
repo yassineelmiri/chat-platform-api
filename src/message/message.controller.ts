@@ -13,9 +13,9 @@ export class MessageController {
 
 
 
-  @Post('conversation/:conversationId')
+  @Post(':chatId')
   async sendMessage(
-    @Param('conversationId') conversationId: string,
+    @Param('chatId') chatId: string,
     @Body() createMessageDto: CreateMessageDto,
     @Req() req: RequestWithUser
   ) {
@@ -23,7 +23,7 @@ export class MessageController {
 
 
       return this.messageService.sendMessage(
-        conversationId,
+        chatId,
         createMessageDto,
         req.userId
       );

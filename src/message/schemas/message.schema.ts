@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Channel } from '../../channel/schemas/channel.schema';
+import { Channel } from '../../channel/schemas/chat.schema';
 import { User } from '../../user/schemas/user.schema';
 import { Conversation } from '../../conversation/schemas/conversation.schema';
 

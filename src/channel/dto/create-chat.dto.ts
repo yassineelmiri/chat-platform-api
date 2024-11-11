@@ -1,6 +1,6 @@
 import { IsArray, IsBoolean, IsMongoId, IsOptional, IsString } from 'class-validator';
 
-export class CreateChannelDto {
+export class CreateChatDto {
   @IsString()
   name: string;
 
@@ -16,12 +16,19 @@ export class CreateChannelDto {
   @IsOptional()
   isSafeMode?: boolean;
 
+  @IsBoolean()
+  @IsOptional()
+  isGroup?: boolean;
+
   @IsMongoId()
   @IsOptional()
   ownerId?: string;
 
+  @IsString()
+  message: string;
+
   @IsMongoId()
   @IsOptional()
   @IsArray()
-  mambers?: string[];
+  members?: string[];
 }

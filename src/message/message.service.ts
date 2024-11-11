@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Message, MessageDocument } from './schemas/message.schema';
-import { Channel, ChannelDocument } from 'src/channel/schemas/channel.schema';
+import { Channel, ChannelDocument } from 'src/channel/schemas/chat.schema';
 import { Conversation, ConversationDocument } from 'src/conversation/schemas/conversation.schema';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagePaginationDto } from './dto/message-pagination.dto';

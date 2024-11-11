@@ -16,6 +16,8 @@ export class AuthController {
   // POST register
   @Post('signup')
   async signup(@Body() signupData: SignupDto) {
+
+    console.log(signupData)
     try {
       return this.authService.signup(signupData);
     } catch (error) {

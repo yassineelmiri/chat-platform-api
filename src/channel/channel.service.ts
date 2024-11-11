@@ -18,11 +18,25 @@ export class ChannelService {
 
 
 
-    const { name, type, isPrivate, isSafeMode, ownerId } = createChannelDto;
+    const { name, type, isPrivate, isSafeMode, ownerId, mambers } = createChannelDto;
 
     // no need fetch already fetched userwner from auth guard
     // const owner = await this.userModel.findById(ownerId);
     // if (!owner) throw new NotFoundException('Owner not found');
+
+
+
+
+    //check if there is a mambers exist
+    if (mambers) {
+
+      const mambersExist = await this.userModel.find({ _id: { $all: mambers } })
+
+      if (!mambersExist) {
+        throw new NotFoundException('on of mambers you want add to group not Exist ')
+      }
+    }
+
 
     // Create the new channel
     const newChannel = new this.channelModel({
@@ -31,7 +45,7 @@ export class ChannelService {
       isPrivate,
       isSafeMode,
       owner: ownerId,
-      members: [ownerId]  // Automatically add owner to members 
+      members: [ownerId, ...mambers]  // Automatically add owner to members 
     });
 
     // Save the channel 

@@ -5,10 +5,13 @@ import { RoleTypes, StatusUser } from 'src/common/enums/user.enum';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+@Schema({ collection: 'users' })
 export class User {
   @Prop()
   username: string;
+
+  @Prop({ default: 'https://randomuser.me/api/portraits/women/1.jpg' })
+  avatar: string;
 
   @Prop({ required: true, unique: true })
   email: string;
@@ -25,8 +28,7 @@ export class User {
   @Prop({ default: 0 })
   reputation: number;
 
-  // @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  // friends: User[];
+
 
 
 

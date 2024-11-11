@@ -1,56 +1,67 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Conversation, ConversationDocument } from './schemas/conversation.schema';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { CreateConversationDto } from './dto/create-conversation.dto';
-// import { MessageService } from 'src/message/message.service';
-// import { CreateMessageDto } from 'src/message/dto/create-message.dto';
+import { MessageService } from 'src/message/message.service';
+import { CreateMessageDto } from 'src/message/dto/create-message.dto';
+import { Message, MessageDocument } from 'src/message/schemas/message.schema';
 
 @Injectable()
 export class ConversationService {
   constructor(
     @InjectModel(Conversation.name) private conversationModel: Model<ConversationDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    // private messageService: MessageService,
+    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    private messageService: MessageService,
   ) { }
 
   async createConversation(createConversationDto: CreateConversationDto, userId: string): Promise<Conversation> {
     const { withUser, message } = createConversationDto;
 
+    const userIdObj = new Types.ObjectId(userId);
+    const withUserObj = new Types.ObjectId(withUser);
 
-    // Check if users exist
-    const userWantToTalkExist = await this.userModel.find({ _id: withUser });
+    const userWantToTalkExist = await this.userModel.findById(withUserObj);
     if (!userWantToTalkExist) {
-      throw new NotFoundException(' user want start conversation with not found');
+      throw new NotFoundException('User to start conversation with not found');
     }
 
-    // create the new conversation
-    const newConversation = new this.conversationModel({
-      participants: [userId, withUser],
-      messages: [], //  here i initialize with empty messages array
+    let conversation = await this.conversationModel.findOne({
+      participants: { $all: [userIdObj, withUserObj] },
     });
 
-    await newConversation.save();
-
-    // send the initial message if content is provided
-    if (message) {
-      // const messageDto: CreateMessageDto = {
-      //   sender: userId, //  the First participant index sends initial message
-      //   content: message,
-      // };
-
-      // const messageCreated = await this.messageService.sendConversationMessage(
-      //   newConversation._id.toString(),
-      //   messageDto
-      // );
-
-
-
+    if (conversation) {
+      if (message) {
+        const messageDto: CreateMessageDto = {
+          sender: userId,
+          content: message,
+        };
+        await this.messageService.sendConversationMessage(conversation._id.toString(), messageDto);
+        conversation.lastMessage = message; // Update lastMessage field
+        await conversation.save(); // Save the conversation with updated lastMessage
+      }
+      return conversation;
     }
 
-    return newConversation;
+    conversation = new this.conversationModel({
+      participants: [userIdObj, withUserObj],
+      lastMessage: message || null,
+    });
+    await conversation.save();
+
+    if (message) {
+      const messageDto: CreateMessageDto = {
+        sender: userId,
+        content: message,
+      };
+      await this.messageService.sendConversationMessage(conversation._id.toString(), messageDto);
+    }
+
+    return conversation;
   }
+
 
   async getConversationById(id: string): Promise<Conversation> {
     const conversation = await this.conversationModel
@@ -67,11 +78,28 @@ export class ConversationService {
   }
 
 
+  async getUserConversations(userId: string, page: number, limit: number): Promise<Conversation[]> {
+    const skip = (page - 1) * limit;
+    const userIdObj = new Types.ObjectId(userId);
 
-  async getUserConversations(userId: string): Promise<Conversation[]> {
-    return this.conversationModel
-      .find({ participants: userId })
-      .populate('participants', 'username email')
-      .exec();
+    try {
+      const conversations = await this.conversationModel
+        .find({ participants: userIdObj })
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate({
+          path: 'participants',
+          select: 'username email avatar',
+          model: 'User'
+        })
+        .lean()
+        .exec();
+
+      return conversations;
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+      throw error;
+    }
   }
 }

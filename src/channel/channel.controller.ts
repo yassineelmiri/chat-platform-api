@@ -11,7 +11,7 @@ import { RequestWithUser } from 'src/common/types/user.types';
 
 @Controller('channels')
 @UseGuards(AuthGuard)
-// @Roles(RoleTypes.User)
+@Roles(RoleTypes.User)
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) { }
 

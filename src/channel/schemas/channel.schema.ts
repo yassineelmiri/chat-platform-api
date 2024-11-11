@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument, Schema as MongooseSchema } from 'mongoose';
+import { Document, HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 import { User } from '../../user/schemas/user.schema';
-import { Message } from '../../message/schemas/message.schema';
 import { StatusChannel } from 'src/common/enums/channel.enum';
 
 export type ChannelDocument = HydratedDocument<Channel>;
@@ -22,14 +21,14 @@ export class Channel extends Document {
   @Prop({ default: false })
   isSafeMode: boolean;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
-  owner: User;
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  owner: Types.ObjectId;
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }], index: true })
-  members: User[];
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], index: true })
+  members: Types.ObjectId[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }] })
-  moderators: User[];
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
+  moderators: Types.ObjectId[];
 
   @Prop({ type: [String], default: [] })
   bannedWords: string[];

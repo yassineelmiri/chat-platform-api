@@ -1,5 +1,4 @@
-import { IsBoolean, isEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
-import { StatusChannel } from 'src/common/enums/channel.enum';
+import { IsArray, IsBoolean, IsMongoId, IsOptional, IsString } from 'class-validator';
 
 export class CreateChannelDto {
   @IsString()
@@ -20,4 +19,9 @@ export class CreateChannelDto {
   @IsMongoId()
   @IsOptional()
   ownerId?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  @IsArray()
+  mambers?: string[];
 }

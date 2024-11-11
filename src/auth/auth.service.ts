@@ -21,7 +21,10 @@ export class AuthService {
 
   // SignupDto it's like a validator  validate data we pass to it
   async signup(signupData: SignupDto) {
-    const { email, password, name, role = 'user' } = signupData;
+
+
+    console.log(signupData)
+    const { email, password, username, role = 'user' } = signupData;
 
     // check if email is existing
     const emailIsExisting = await this.userModel.findOne({ email });
@@ -35,7 +38,7 @@ export class AuthService {
 
     // create user & save it
     const newUser = new this.userModel({
-      name,
+      username,
       email,
       password: hashedPassword,
       role,

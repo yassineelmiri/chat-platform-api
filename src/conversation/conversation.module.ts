@@ -6,17 +6,22 @@ import { User, UserSchema } from 'src/user/schemas/user.schema';
 import { Conversation, ConversationSchema } from 'src/conversation/schemas/conversation.schema';
 import { MessageService } from 'src/message/message.service';
 import { ChannelModule } from 'src/channel/channel.module';
+import { Message, MessageSchema } from 'src/message/schemas/message.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Conversation.name, schema: ConversationSchema },
-      { name: User.name, schema: UserSchema },
+      {
+        name: User.name,
+        schema: UserSchema
+      },
+      { name: Message.name, schema: MessageSchema },
     ]),
     ChannelModule
   ],
   controllers: [ConversationController],
-  providers: [ConversationService],
+  providers: [ConversationService, MessageService],
 
 })
 export class ConversationModule { }

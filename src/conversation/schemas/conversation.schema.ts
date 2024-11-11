@@ -4,13 +4,13 @@ import { User } from '../../user/schemas/user.schema';
 
 export type ConversationDocument = Conversation & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Conversation {
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], required: true })
-  participants: User[];
+  @Prop([{ type: Types.ObjectId, ref: 'User', required: true }])
+  participants: Types.ObjectId[];
 
-  @Prop({ default: Date.now })
-  createdAt: Date;
+  @Prop({ type: String })
+  lastMessage: string;
 }
 
 export const ConversationSchema = SchemaFactory.createForClass(Conversation);

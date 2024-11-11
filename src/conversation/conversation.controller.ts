@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, BadRequestException, Req, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, BadRequestException, Req, UseGuards, Get, Query } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { Conversation } from 'src/conversation/schemas/conversation.schema';
@@ -22,15 +22,17 @@ export class ConversationController {
     }
   }
   @Get('user')
-  async getUserConversations(@Req() req: RequestWithUser) {
+  async getUserConversations(
+    @Req() req: RequestWithUser,
 
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
     try {
-      return this.conversationService.getUserConversations(req.userId);
+      return await this.conversationService.getUserConversations(req.userId, page, limit);
     } catch (error) {
-
-      throw new BadRequestException('Failed to getUserConversations');
+      throw new BadRequestException('Failed to get user conversations');
     }
-
   }
 
 

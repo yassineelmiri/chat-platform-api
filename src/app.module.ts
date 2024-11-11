@@ -50,8 +50,7 @@ import { MessageModule } from './message/message.module';
     UserModule,
     AuthModule,
     MessageModule,
-    ChannelModule,
-    ConversationModule,
+   ChatMod
     FriendshipModule,
 
   ],

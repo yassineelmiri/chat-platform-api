@@ -1,8 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Channel } from '../../channel/schemas/chat.schema';
-import { User } from '../../user/schemas/user.schema';
-import { Conversation } from '../../conversation/schemas/conversation.schema';
 
 export type MessageDocument = Message & Document;
 
@@ -15,11 +12,9 @@ export class Message {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   sender: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Channel' })
-  channel?: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: 'chat' })
+  chat: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Conversation' })
-  conversation?: Types.ObjectId;
 
   @Prop({ required: true })
   content: string;

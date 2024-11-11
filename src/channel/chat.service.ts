@@ -9,7 +9,7 @@ import { CreateMessageDto } from 'src/message/dto/create-message.dto';
 import { Message, MessageDocument } from 'src/message/schemas/message.schema';
 
 @Injectable()
-export class CommunicationService {
+export class ChatService {
   constructor(
     @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
@@ -18,12 +18,15 @@ export class CommunicationService {
   ) { }
 
 
+
+
+
   // could be group and normal chat between 2 people
   async createChat(createChatDto: CreateChatDto, userId: string): Promise<Chat> {
     const { name, type, isPrivate, isSafeMode, members, isGroup, message } = createChatDto;
 
 
-    const ownerId = userId  // owner is who create group or conversation first time
+    const ownerId = new Types.ObjectId(userId);  // convert userId toObjectId and   owner is who create group or conversation first time
     // Validate members if provided
     if (members) {
       const membersExist = await this.userModel.find({ _id: { $all: members } });
@@ -38,24 +41,27 @@ export class CommunicationService {
       type,
       isPrivate,
       isSafeMode,
-      owner: isGroup ? undefined : ownerId,
-      members: isGroup ? members : [ownerId, ...members],
+      owner: isGroup ? ownerId : undefined, // if chat is group save owener
+      members: [ownerId, ...members],
       isGroup,
     });
 
+
+    // create first msg if user wnat start normal conversation
     if (!isGroup && message) {
-      // Create initial message if it's a direct conversation
+      // Create initial message if its a direct conversation
       const messageDto: CreateMessageDto = {
-        sender: userId,
         content: message,
       };
-      await this.messageService.sendConversationMessage(newChat._id.toString(), messageDto);
+      await this.messageService.sendMessage(newChat._id.toString(), messageDto, userId);
       newChat.lastMessage = message;
     }
 
     await newChat.save();
     return newChat;
   }
+
+
 
   async joinChat(userId: string, chatId: string): Promise<Chat> {
     const chat = await this.chatModel.findById(chatId);
@@ -71,6 +77,7 @@ export class CommunicationService {
 
     return chat;
   }
+
 
 
   // thsi if you want remove chat weaher group or not
@@ -89,9 +96,15 @@ export class CommunicationService {
 
 
   // this is fetch all messages chat
-  async getChatById(chatId: string): Promise<Chat> {
+  async getChatById(chatId: string, page: number, limit: number): Promise<Chat> {
+    const skip = (page - 1) * limit;
+    const chatIdObj = new Types.ObjectId(chatId);
+
     const chat = await this.chatModel
-      .findById(chatId)
+      .findById(chatIdObj)
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .populate('members', 'username email')
       .exec();
 
@@ -102,12 +115,15 @@ export class CommunicationService {
     return chat;
   }
 
-  async getUserChats(userId: string, page: number, limit: number): Promise<Chat[]> {
+
+
+  // bring all chats weather is group or dm
+  async getUserChats(userId: string, page: number, limit: number): Promise<any[]> {
     const skip = (page - 1) * limit;
     const userIdObj = new Types.ObjectId(userId);
 
     const chats = await this.chatModel
-      .find({ members: userIdObj, isGroup: false })
+      .find({ members: userIdObj })
       .sort({ updatedAt: -1 })
       .skip(skip)
       .limit(limit)

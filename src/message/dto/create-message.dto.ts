@@ -5,7 +5,5 @@ export class CreateMessageDto {
   @IsString()
   content: string;
 
-  @IsNotEmpty()
-  @IsMongoId()
-  sender: string;
+
 }

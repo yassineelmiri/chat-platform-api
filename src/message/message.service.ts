@@ -1,121 +1,46 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Message, MessageDocument } from './schemas/message.schema';
-import { Channel, ChannelDocument } from 'src/channel/schemas/chat.schema';
-import { Conversation, ConversationDocument } from 'src/conversation/schemas/conversation.schema';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { MessagePaginationDto } from './dto/message-pagination.dto';
-
+import { Chat, ChatDocument } from 'src/channel/schemas/chat.schema';
 
 @Injectable()
 export class MessageService {
   constructor(
-    @InjectModel(Message.name) private messageModel: Model<Message>,
-    @InjectModel(Channel.name) private channelModel: Model<Channel>,
-    @InjectModel(Conversation.name) private conversationModel: Model<Conversation>,
-
-
+    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
   ) { }
 
+  async sendMessage(chatId: string, createMessageDto: CreateMessageDto, userId: string): Promise<Message> {
+    const { content } = createMessageDto;
 
-  // this respons for send msg inside channel
-  async sendChannelMessage(
-    channelId: string,
-    createMessageDto: CreateMessageDto,
-  ): Promise<Message> {
 
-    // chekc if channel exist
-    const channel = await this.channelModel.findById(channelId);
-    if (!channel) {
-      throw new NotFoundException('Channel not found');
+    const sender = userId // sender is person who authed
+    
+    // Find the chat
+    const chat = await this.chatModel.findById(chatId).exec();
+    if (!chat) throw new NotFoundException('Chat not found');
+
+    // Check if the sender is a member of the chat
+    if (!chat.members.includes(sender as any)) {
+      throw new BadRequestException('User is not a member of the chat');
     }
 
-    if (!channel.members.includes(createMessageDto.sender as any)) {
-      throw new BadRequestException('User is not a member of this channel');
-    }
-
+    // Create and save the message
     const message = new this.messageModel({
-      ...createMessageDto,
-      channel: channelId,
+      sender,
+      content,
+      chat: chat._id, // Associate the message with the chat
+      type: 'text', // now is text type
     });
-
     await message.save();
 
-
-
-    return message;
-  }
-
-
-  // this respons for get msgs inside channel
-  async getChannelMessages(
-    channelId: string,
-    paginationDto: MessagePaginationDto,
-  ): Promise<Message[]> {
-    const { page, limit } = paginationDto;
-    const skip = (page - 1) * limit;
-
-    return this.messageModel
-      .find({ channel: channelId })
-      .sort({ timestamp: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate('sender', 'username')
-      .exec();
-  }
-
-
-
-
-  // now this for conversations 
-  async sendConversationMessage(
-    conversationId: string,
-    createMessageDto: CreateMessageDto,
-  ): Promise<Message> {
-
-    // check if conversatin Exist
-    const conversation = await this.conversationModel.findById(conversationId);
-    if (!conversation) {
-      throw new NotFoundException('Conversation not found');
-    }
-
-    // check if the sender exist in this conversation
-    if (!conversation.participants.includes(createMessageDto.sender as any)) {
-      throw new BadRequestException('User is not a participant in this conversation');
-    }
-
-    const message = new this.messageModel({
-      ...createMessageDto,
-      conversation: conversationId,
-    });
-
-    await message.save();
-
+    // Update the lastMessage field in the chat document
+    chat.lastMessage = content;
+    await chat.save();
 
     return message;
-  }
-
-
-  async getConversationMessages(
-    conversationId: string,
-    paginationDto: MessagePaginationDto,
-  ): Promise<Message[]> {
-    const conversation = await this.conversationModel.findById(conversationId);
-    if (!conversation) {
-      throw new NotFoundException('Conversation not found');
-    }
-
-    const { page, limit } = paginationDto;
-    const skip = (page - 1) * limit;
-
-    return this.messageModel
-      .find({ conversation: conversationId })
-      .sort({ timestamp: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate('sender', 'username')
-      .exec();
   }
 
 
@@ -134,6 +59,4 @@ export class MessageService {
     await this.messageModel.findByIdAndDelete(messageId);
 
   }
-
-
 }

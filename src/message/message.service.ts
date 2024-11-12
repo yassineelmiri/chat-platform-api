@@ -71,7 +71,7 @@ export class MessageService {
 
 
   // Fetch all messages for a given chat, along with chat and members details
-  async getMessagesBelongChat(chatId: string, page: number, limit: number): Promise<any> {
+  async getMessagesBelongChat(chatId: string, page: number, limit: number): Promise<Message[]> {
     const skip = (page - 1) * limit;
     const chatIdObj = new Types.ObjectId(chatId);
 
@@ -79,7 +79,7 @@ export class MessageService {
     // Retrieve messages with populated chat and members
     const messages = await this.messageModel
       .find({ chat: chatIdObj })
-      .sort({ createdAt: -1 })
+      // .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
 
@@ -107,10 +107,7 @@ export class MessageService {
       .lean()
       .exec();
 
-    return {
-      chat: chatDetails,
-      messages
-    };
+    return messages
   }
 
 

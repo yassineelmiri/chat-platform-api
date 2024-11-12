@@ -9,6 +9,7 @@ import { ChatService } from './chat.service';
 import { MessageService } from 'src/message/message.service';
 import { MessageGateway } from 'src/message/message.gateway';
 import { ChatGateway } from './chat.gateway';
+import { CallGateway } from './call.gateway';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { ChatGateway } from './chat.gateway';
     ]),
   ],
   controllers: [ChatController],
-  providers: [ChatService, MessageService, MessageGateway,ChatGateway],
+  providers: [ChatService, MessageService, MessageGateway, ChatGateway, CallGateway],
   exports: [ChatService, MongooseModule],  // Export  service to use it in other moduel
 })
 export class ChatModule { }

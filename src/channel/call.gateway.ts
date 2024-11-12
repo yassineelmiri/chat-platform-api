@@ -56,6 +56,9 @@ export class CallGateway {
         });
     }
 
+
+    // adds person to the call room
+    // like entering the meeting room
     @SubscribeMessage('acceptCall')
     handleAcceptCall(socket: AuthenticatedSocket, data: {
         chatId: string;
@@ -96,7 +99,7 @@ export class CallGateway {
         callerId: string;
     }) {
         const { chatId } = data;
-        
+
         this.server.to(`call-${chatId}`).emit('callRejected', {
             userId: socket.user._id.toString(),
             username: socket.user.username
@@ -168,7 +171,7 @@ export class CallGateway {
             }
         }
     }
-
+    //offer (Starting the connection)
     @SubscribeMessage('offer')
     handleOffer(socket: AuthenticatedSocket, data: {
         chatId: string;
@@ -182,6 +185,8 @@ export class CallGateway {
         });
     }
 
+
+    //answer (Accepting the connection)
     @SubscribeMessage('answer')
     handleAnswer(socket: AuthenticatedSocket, data: {
         chatId: string;
@@ -195,113 +200,25 @@ export class CallGateway {
         });
     }
 
+
+
+
+    //ICE Candidate  = Finding ways to connect <nta fi asfi and fi casa ntla9aw fi marrakch
+    // we use STUN Server that mean I can send it through the post office if direct delivery doesn't work
     @SubscribeMessage('ice-candidate')
     handleIceCandidate(socket: AuthenticatedSocket, data: {
         chatId: string;
         targetUserId: string;
-        candidate: RTCIceCandidateInit;
+        candidate: RTCIceCandidateInit; // The connection recipe
     }) {
         const { chatId, targetUserId, candidate } = data;
+
+        // Itis like saying
+        // hey I found a way we might be able to connect!
+        // Here is the address/method we can try
         socket.to(`call-${chatId}`).emit('ice-candidate', {
-            candidate,
+            candidate, // The connection recipe
             userId: socket.user._id.toString(),
         });
     }
 }
-
-// import { WebSocketGateway, WebSocketServer, SubscribeMessage } from '@nestjs/websockets';
-// import { Server } from 'socket.io';
-// import { AuthenticatedSocket } from 'src/common/socket.middleware';
-
-// @WebSocketGateway({
-//     cors: {
-//         origin: '*',
-//     },
-// })
-// export class VideoCallGateway {
-//     @WebSocketServer()
-//     server: Server;
-
-//     private activeRooms = new Map<string, Set<string>>(); // chatId -> Set of userIds
-
-//     @SubscribeMessage('initiateCall')
-//     handleInitiateCall(socket: AuthenticatedSocket, data: { chatId: string }) {
-//         const { chatId } = data;
-//         const callerId = socket.user._id
-//         console.log(callerId)
-//         console.log(chatId)
-//         // Notify all chat members about incoming call
-//         socket.to(chatId).emit('incomingCall', {
-//             chatId,
-//             callerId,
-//             callerName: socket.user.username,
-//         });
-//     }
-
-//     @SubscribeMessage('acceptCall')
-//     handleAcceptCall(socket: AuthenticatedSocket, data: { chatId: string, callerId: string }) {
-//         const { chatId, callerId } = data;
-//         const userId = socket.user._id.toString();
-
-//         if (!this.activeRooms.has(chatId)) {
-//             this.activeRooms.set(chatId, new Set());
-//         }
-//         this.activeRooms.get(chatId).add(userId);
-
-//         socket.join(`call-${chatId}`);
-
-//         this.server.to(`call-${chatId}`).emit('userJoinedCall', {
-//             userId,
-//             username: socket.user.username,
-//         });
-//     }
-
-//     @SubscribeMessage('rejectCall')
-//     handleRejectCall(socket: AuthenticatedSocket, data: { chatId: string, callerId: string }) {
-//         const userId = socket.user._id.toString();
-
-//         this.server.to(`call-${data.chatId}`).emit('callRejected', {
-//             userId,
-//             username: socket.user.username,
-//         });
-//     }
-
-//     @SubscribeMessage('leaveCall')
-//     handleLeaveCall(socket: AuthenticatedSocket, data: { chatId: string }) {
-//         const { chatId } = data;
-//         const userId = socket.user._id.toString();
-
-//         socket.leave(`call-${chatId}`);
-//         this.activeRooms.get(chatId)?.delete(userId);
-
-//         this.server.to(`call-${chatId}`).emit('userLeftCall', {
-//             userId,
-//             username: socket.user.username,
-//         });
-//     }
-
-//     // WebRTC Signaling
-//     @SubscribeMessage('offer')
-//     handleOffer(socket: AuthenticatedSocket, data: { chatId: string, offer: any }) {
-//         socket.to(`call-${data.chatId}`).emit('offer', {
-//             offer: data.offer,
-//             userId: socket.user._id.toString(),
-//         });
-//     }
-
-//     @SubscribeMessage('answer')
-//     handleAnswer(socket: AuthenticatedSocket, data: { chatId: string, answer: any }) {
-//         socket.to(`call-${data.chatId}`).emit('answer', {
-//             answer: data.answer,
-//             userId: socket.user._id.toString(),
-//         });
-//     }
-
-//     @SubscribeMessage('ice-candidate')
-//     handleIceCandidate(socket: AuthenticatedSocket, data: { chatId: string, candidate: any }) {
-//         socket.to(`call-${data.chatId}`).emit('ice-candidate', {
-//             candidate: data.candidate,
-//             userId: socket.user._id.toString(),
-//         });
-//     }
-// }

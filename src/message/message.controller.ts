@@ -2,10 +2,14 @@ import { Controller, Post, Get, Body, Param, Query, UseGuards, Delete, BadReques
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { RequestWithUser } from 'src/common/types/user.types';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RoleTypes } from 'src/common/enums/user.enum';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 
 @Controller('messages')
-
+@UseGuards(AuthGuard)
+@Roles(RoleTypes.User)
 export class MessageController {
   constructor(private readonly messageService: MessageService) { }
 

@@ -4,12 +4,14 @@ import { MessageController } from './message.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Message, MessageSchema } from 'src/message/schemas/message.schema';
 import { Chat, ChatSchema } from 'src/channel/schemas/chat.schema';
+import { User, UserSchema } from 'src/user/schemas/user.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Chat.name, schema: ChatSchema },
       { name: Message.name, schema: MessageSchema },
+      { name: User.name, schema: UserSchema },
 
     ]),
 

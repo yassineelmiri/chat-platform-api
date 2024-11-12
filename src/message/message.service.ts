@@ -12,7 +12,7 @@ export class MessageService {
     @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
   ) { }
 
-  async sendMessage(chatId: string, createMessageDto: CreateMessageDto, userId: string,): Promise<Message> {
+  async sendMessage(chatId: string, createMessageDto: CreateMessageDto, userId: string): Promise<Message> {
     const { content } = createMessageDto;
 
 
@@ -20,7 +20,6 @@ export class MessageService {
     const chatIdObj = new Types.ObjectId(chatId); // sender is person who authed
 
 
-    console.log(chatIdObj)
     // if msg send for first time no need 
     // Find the chat 
 
@@ -29,7 +28,7 @@ export class MessageService {
 
 
     // Check if the sender is a member of the chat
-    if (!chat.members.includes(sender as any)) {
+    if (!chat.members.includes(userId as any)) {
       throw new BadRequestException('User is not a member of the chat');
     }
 

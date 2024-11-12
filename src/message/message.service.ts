@@ -20,7 +20,7 @@ export class MessageService {
     const chatIdObj = new Types.ObjectId(chatId); // sender is person who authed
 
 
-
+    console.log(chatIdObj)
     // if msg send for first time no need 
     // Find the chat 
 
@@ -38,7 +38,7 @@ export class MessageService {
     const message = new this.messageModel({
       sender,
       content,
-      chat: chat._id, // Associate the message with the chat
+      chat: chatIdObj, // Associate the message with the chat
       type: 'text', // now is text type
     });
     await message.save();
@@ -68,4 +68,51 @@ export class MessageService {
     await this.messageModel.findByIdAndDelete(messageId);
 
   }
+
+
+
+  // Fetch all messages for a given chat, along with chat and members details
+  async getMessagesBelongChat(chatId: string, page: number, limit: number): Promise<any> {
+    const skip = (page - 1) * limit;
+    const chatIdObj = new Types.ObjectId(chatId);
+
+
+    // Retrieve messages with populated chat and members
+    const messages = await this.messageModel
+      .find({ chat: chatIdObj })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+      .populate({
+        path: 'sender',
+        select: 'username email avatar',
+        model: 'User'
+      })
+      .lean()
+      .exec();
+
+
+    // if (!messages.length) {
+    //   messages = []
+    // }
+
+    // Optionally, include chat details for response
+    const chatDetails = await this.chatModel.findById(chatIdObj)
+      // .select('name members createdAt updatedAt')
+      .populate({
+        path: 'members',
+        select: 'username email avatar status ',
+        model: 'User'
+      })
+      .lean()
+      .exec();
+
+    return {
+      chat: chatDetails,
+      messages
+    };
+  }
+
+
 }

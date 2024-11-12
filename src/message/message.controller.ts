@@ -1,7 +1,6 @@
 import { Controller, Post, Get, Body, Param, Query, UseGuards, Delete, BadRequestException, Req } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { MessagePaginationDto } from './dto/message-pagination.dto';
 import { RequestWithUser } from 'src/common/types/user.types';
 
 
@@ -45,6 +44,22 @@ export class MessageController {
     } catch (error) {
 
       throw new BadRequestException('Failed to delete messages');
+    }
+  }
+
+
+
+  // Get all messages belonging to a specific chat with details
+  @Get(':chatId')
+  async getChatById(
+    @Param('chatId') chatId: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    try {
+      return await this.messageService.getMessagesBelongChat(chatId, page, limit);
+    } catch (error) {
+      throw new BadRequestException('Failed to retrieve chat messages');
     }
   }
 

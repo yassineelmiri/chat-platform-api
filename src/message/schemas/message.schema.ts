@@ -12,7 +12,7 @@ export class Message {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   sender: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'chat' })
+  @Prop({ type: Types.ObjectId, ref: 'chat', required: true })
   chat: Types.ObjectId;
 
 

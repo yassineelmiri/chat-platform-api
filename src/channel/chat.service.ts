@@ -15,6 +15,7 @@ export class ChatService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
     private messageService: MessageService,
+
   ) { }
 
 
@@ -107,7 +108,7 @@ export class ChatService {
       .limit(limit)
       .populate({
         path: 'members',
-        select: 'username email avatar',
+        select: 'username email avatar status',
         model: 'User'
       })
       .lean()
@@ -134,7 +135,7 @@ export class ChatService {
       .limit(limit)
       .populate({
         path: 'members',
-        select: 'username email avatar',
+        select: 'username email avatar status',
         model: 'User'
       })
       .lean()

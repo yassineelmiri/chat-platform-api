@@ -4,12 +4,14 @@ import { Model, Types } from 'mongoose';
 import { Message, MessageDocument } from './schemas/message.schema';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { Chat, ChatDocument } from 'src/channel/schemas/chat.schema';
+import { MessageGateway } from './message.gateway';
 
 @Injectable()
 export class MessageService {
   constructor(
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
     @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
+    private messageGateway: MessageGateway, // Add this
   ) { }
 
   async sendMessage(chatId: string, createMessageDto: CreateMessageDto, userId: string): Promise<Message> {
@@ -46,7 +48,24 @@ export class MessageService {
     chat.lastMessage = content;
     await chat.save();
 
-    return message;
+
+    // After saving the message, populate the sender details
+    const populatedMessage = await this.messageModel
+      .findById(message._id)
+      .populate({
+        path: 'sender',
+        select: 'username email avatar status',
+        model: 'User'
+      })
+      .lean()
+      .exec();
+
+    // Emit the new message to all users in the chat
+    this.messageGateway.server.to(chatId).emit('newMessage', {
+      message: populatedMessage
+    });
+
+    return populatedMessage;
   }
 
 
@@ -81,11 +100,11 @@ export class MessageService {
       .find({ chat: chatIdObj })
       // .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit)
+      .limit(50)
 
       .populate({
         path: 'sender',
-        select: 'username email avatar',
+        select: 'username email avatar status',
         model: 'User'
       })
       .lean()

@@ -1,6 +1,9 @@
+
 import { WebSocketGateway, WebSocketServer, SubscribeMessage } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { AuthenticatedSocket } from '../common/socket.middleware';
+import { Injectable } from '@nestjs/common';
+import { ChatService } from './chat.service';
 
 interface CallParticipant {
     userId: string;
@@ -14,6 +17,7 @@ interface CallRoom {
     participants: Map<string, CallParticipant>;
 }
 
+@Injectable()
 @WebSocketGateway({
     cors: { origin: '*' },
 })
@@ -22,9 +26,61 @@ export class CallGateway {
     server: Server;
 
     private activeRooms = new Map<string, CallRoom>();
+    private userSocketMap = new Map<string, string>(); // userId -> socketId mapping
+
+    constructor(private chatService: ChatService) { }
+
+
+
+    handleConnection(socket: AuthenticatedSocket) {
+        const userId = socket.user._id.toString();
+        const username = socket.user.username;
+
+        this.userSocketMap.set(userId, socket.id);
+
+        // Broadcast to all OTHER connected clients that this user is online
+        socket.broadcast.emit('userConnected', {
+            userId,
+            username,
+            timestamp: new Date(),
+            status: 'online'
+        });
+
+        // Send current online users to the newly connected user
+        const onlineUsers = Array.from(this.userSocketMap.keys())
+            .filter(id => id !== userId) // Exclude the current user
+            .map(id => ({
+                userId: id,
+                status: 'online'
+            }));
+
+        socket.emit('onlineUsers', onlineUsers);
+    }
+
+    handleDisconnect(socket: AuthenticatedSocket) {
+        const userId = socket.user._id.toString();
+        const username = socket.user.username;
+
+        this.userSocketMap.delete(userId);
+
+        // Notify all OTHER users about disconnection
+        socket.broadcast.emit('userDisconnected', {
+            userId,
+            username,
+            timestamp: new Date(),
+            status: 'offline'
+        });
+
+        // Handle any active calls this user might be in
+        this.activeRooms.forEach((room, chatId) => {
+            if (room.participants.has(userId)) {
+                this.handleLeaveCall(socket, { chatId });
+            }
+        });
+    }
 
     @SubscribeMessage('initiateCall')
-    handleInitiateCall(socket: AuthenticatedSocket, data: {
+    async handleInitiateCall(socket: AuthenticatedSocket, data: {
         chatId: string;
         type: 'video' | 'audio';
     }) {
@@ -47,16 +103,29 @@ export class CallGateway {
         // Join the call room
         socket.join(`call-${chatId}`);
 
-        // Notify others about incoming call
-        socket.to(chatId).emit('incomingCall', {
-            chatId,
-            callerId,
-            callerName: socket.user.username,
-            type
-        });
+        try {
+            // Get all users in the chat
+            const chatUsers = await this.chatService.getChatUsers(chatId);
+
+            // Notify all online users from the chat
+            chatUsers.forEach(userId => {
+                const socketId = this.userSocketMap.get(userId.toString());
+                if (socketId && userId.toString() !== callerId) {
+                    this.server.to(socketId).emit('incomingCall', {
+                        chatId,
+                        callerId,
+                        callerName: socket.user.username,
+                        type
+                    });
+                }
+            });
+        } catch (error) {
+            console.error('Error notifying chat users:', error);
+            socket.emit('callError', {
+                message: 'Failed to notify users'
+            });
+        }
     }
-
-
     // adds person to the call room
     // like entering the meeting room
     @SubscribeMessage('acceptCall')
@@ -67,7 +136,7 @@ export class CallGateway {
         const { chatId } = data;
         const userId = socket.user._id.toString();
         const room = this.activeRooms.get(chatId);
-
+        console.log('accept call')
         if (room) {
             // Add participant to room
             room.participants.set(userId, {
@@ -151,6 +220,7 @@ export class CallGateway {
         }
     }
 
+
     @SubscribeMessage('toggleVideo')
     handleToggleVideo(socket: AuthenticatedSocket, data: {
         chatId: string;
@@ -171,6 +241,8 @@ export class CallGateway {
             }
         }
     }
+
+
     //offer (Starting the connection)
     @SubscribeMessage('offer')
     handleOffer(socket: AuthenticatedSocket, data: {

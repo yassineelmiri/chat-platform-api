@@ -143,4 +143,13 @@ export class ChatService {
 
     return chats;
   }
+
+
+  async getChatUsers(chatId: string): Promise<any[]> {
+    const chat = await this.chatModel.findById(chatId);
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+    return chat.members;
+  }
 }

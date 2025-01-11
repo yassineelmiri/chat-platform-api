@@ -1,39 +1,96 @@
+# Chat Platform API
+
+![image](https://github.com/user-attachments/assets/3ff30c00-00ab-4d09-a7eb-3c0658001f51)
 
 
-# Chat Platfomr
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+La **Chat Platform API** est une solution backend robuste pour une plateforme de messagerie en temps réel. Elle prend en charge des fonctionnalités telles que les canaux de discussion, les messages privés, les notifications en temps réel et bien plus.
 
-## Overview
+---
 
-Chat Platfome like discord and slack.
+## 🌟 Fonctionnalités principales
 
-## Folder Structure
+- **Messagerie en temps réel** : WebRTC et WebSocket pour des échanges fluides.
+- **Discussions privées** : Messages entre utilisateurs connectés via le système d'amis.
+- **Système d'amis** : Ajout, gestion et notifications des demandes.
+- **Canaux de discussion** :
+  - Publics et privés.
+  - Gestion des membres et des permissions.
+  - Création de canaux temporaires.
+- **Notifications en temps réel** : Pour les invitations, demandes d'amis et messages.
+- **Modération** :
+  - Ban utilisateur : Accès restreint définitif.
+  - Bounce utilisateur : Suspension de 24h.
+- **Sauvegarde et métriques** :
+  - Enregistrement des sessions publiques.
+  - Analyse des mots-clés fréquemment utilisés.
 
-- **Schema**: Write models and schemas
-- **Common**: We add all files we will reuse it
-- **Config**: contain all values and config need for run our project
+---
 
-## Getting Started
+## 🚀 Installation
 
-1. **Clone the Repository**
+### Prérequis
+- Node.js (version 16 ou supérieure)
+- Docker (facultatif pour la conteneurisation)
+- MongoDB ou PostgreSQL
 
+### Étapes d'installation
+
+1. Clonez le dépôt :
    ```bash
-   git clone [https://github.com/YassineBouchama1/chat-platform-api.git]
+   git clone https://github.com/yassineelmiri/chat-platform-api.git
+   cd chat-platform-api
+   ```
 
-2. **Install Dependencies**
-
-   ```cd [project-directory]
+2. Installez les dépendances :
+   ```bash
    npm install
-   
-3. **Create Environment File**
+   ```
 
-   ```cp .env.example .env
-   Open the .env file and add your specific values for the environment variables.
+3. Configurez les variables d'environnement dans `.env` :
+   ```env
+   DATABASE_URL=your_database_url
+   JWT_SECRET=your_jwt_secret
+   ```
 
-4. **Run the Application**
+4. Lancez l'application :
+   ```bash
+   npm run start:dev
+   ```
 
-   ```npm run start:dev```
+5. L'API sera accessible à [http://localhost:3000](http://localhost:3000).
 
-   
+---
+
+## 🧪 Tests
+
+- Exécutez les tests unitaires et d'intégration :
+  ```bash
+  npm run test
+  ```
+
+---
+
+## 📖 Documentation
+
+La documentation Swagger est accessible à : [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+
+---
+
+## 🛠️ Technologies utilisées
+
+- **Backend** : [NestJS](https://nestjs.com/)
+- **Protocole** : WebSocket et REST API
+- **Tests** : Jest, Supertest
+- **Conteneurisation** : Docker
+
+---
+
+## 🤝 Contribution
+
+Les contributions sont bienvenues. Suivez ces étapes :
+1. Forkez le dépôt.
+2. Créez une branche :
+   ```bash
+   git checkout -b feature/nom-fonctionnalite
+   ```
+3. Soumettez une Pull Request.
